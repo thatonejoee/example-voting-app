@@ -1,4 +1,4 @@
-FROM node:18-slim
+FROM node:18.20.4-slim
 
 # add curl for healthcheck
 RUN apt-get update && \
@@ -17,6 +17,8 @@ RUN npm ci && \
  mv /usr/local/app/node_modules /node_modules
 
 COPY . .
+
+USER node
 
 ENV PORT=80
 EXPOSE 80

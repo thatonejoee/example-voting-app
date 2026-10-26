@@ -1,3 +1,41 @@
+# Capstone 1: Voting App
+
+## Step 1: Run it locally
+
+```bash
+git clone https://github.com/<thatonejoee>/example-voting-app.git
+cd example-voting-app
+docker compose up --build
+```
+
+Vote page: http://localhost:8080
+Result page: http://localhost:8081
+
+![Vote page](docs/vote.png)
+![Result page](docs/result.png)
+
+## Step 2: Containerize it safely
+
+Changes made:
+
+- **Pinned base images:** `python:3.11.9-slim AS base`, `node:18.20.4-slim`, `dotnet 7.0` (SDK and runtime), `redis:8.4-alpine`, so builds are repeatable.
+- **Run as non-root:** `vote` and `worker` run as `appuser` (uid 10001) and `result` runs as `node` (uid 1000), which limits damage if a container is compromised.
+- **Added `.dockerignore` files** to `vote`, `result` and `worker` so git history, caches and secrets aren't copied into images.
+
+How I verified it:
+
+```bash
+docker build --target final -t vote-final ./vote
+docker run --rm vote-final id
+docker compose exec result id
+docker compose exec worker id
+```
+
+Each command printed a non-root user.
+
+
+
+
 # Example Voting App
 
 A simple distributed application running across multiple Docker containers.

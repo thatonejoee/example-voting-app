@@ -40,12 +40,12 @@ services:
       - back-tier
 
   redis:
-    image: redis:alpine
+    image: redis:8.4-alpine
     networks:
       - back-tier
 
   db:
-    image: postgres:9.4
+    image: postgres:15-alpine
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"

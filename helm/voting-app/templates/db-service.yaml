@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  labels:
+    app: db
+    {{- include "voting-app.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.db.service.type }}
+  ports:
+    - name: postgres
+      port: {{ .Values.db.service.port }}
+      targetPort: 5432
+  selector:
+    app: db

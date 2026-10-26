@@ -9,9 +9,9 @@ permissions:
   contents: read
 
 jobs:
-    test:
-     runs-on: ubuntu-latest
-     steps:
+  test:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v4
 
       - name: Start the voting app
@@ -38,6 +38,7 @@ jobs:
       - name: Stop the app
         if: always()
         run: docker compose down -v
+
   build-scan-push:
     needs: test
     runs-on: ubuntu-latest

@@ -38,7 +38,6 @@ jobs:
       - name: Stop the app
         if: always()
         run: docker compose down -v
-
   build-scan-push:
     needs: test
     runs-on: ubuntu-latest

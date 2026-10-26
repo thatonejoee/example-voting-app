@@ -9,13 +9,35 @@ permissions:
   contents: read
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
+    test:
+     runs-on: ubuntu-latest
+     steps:
       - uses: actions/checkout@v4
-      - name: Run integration tests
-        working-directory: result
-        run: docker compose -f docker-compose.test.yml up --build --exit-code-from sut
+
+      - name: Start the voting app
+        run: docker compose up --build -d --wait --wait-timeout 300
+
+      - name: Cast a vote and check it reaches the database
+        run: |
+          curl -sS -X POST --data "vote=b" http://localhost:8080 > /dev/null
+          for i in $(seq 1 20); do
+            count=$(docker compose exec -T db psql -U postgres -tA -c "SELECT COUNT(*) FROM votes WHERE vote='b';" 2>/dev/null || echo 0)
+            if [ "${count:-0}" -ge 1 ]; then
+              echo "Vote reached the database"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "Vote never reached the database"
+          exit 1
+
+      - name: Show logs if something failed
+        if: failure()
+        run: docker compose logs
+
+      - name: Stop the app
+        if: always()
+        run: docker compose down -v
 
   build-scan-push:
     needs: test
